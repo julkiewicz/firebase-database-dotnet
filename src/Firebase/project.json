@@ -1,9 +1,8 @@
 ﻿{
   "supports": {},
   "dependencies": {
-    "Newtonsoft.Json": "9.0.1",
-    "System.Net.Http": "4.3.3",
-    "System.Reactive": "3.1.1"
+    "Newtonsoft.Json": "10.0.3",
+    "Rx-Main": "2.2.5"
   },
   "frameworks": {
     ".NETFramework,Version=v4.6": {}
