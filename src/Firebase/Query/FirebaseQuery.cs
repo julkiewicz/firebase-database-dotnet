@@ -92,7 +92,14 @@ namespace Firebase.Database.Query
 
                 response.EnsureSuccessStatusCode();
 
-                return JsonConvert.DeserializeObject<T>(responseData, Client.Options.JsonSerializerSettings);
+                if (typeof(T) == typeof(string))
+                {
+                    return (T)(object)responseData;
+                }
+                else
+                {
+                    return JsonConvert.DeserializeObject<T>(responseData, Client.Options.JsonSerializerSettings);
+                }
             }
             catch(Exception ex)
             {

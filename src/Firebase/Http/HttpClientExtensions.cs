@@ -9,6 +9,7 @@ namespace Firebase.Database.Http
 
     using Newtonsoft.Json;
     using System.Net;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// The http client extensions for object deserializations.
@@ -37,14 +38,25 @@ namespace Firebase.Database.Http
 
                 response.EnsureSuccessStatusCode();
 
-                var dictionary = JsonConvert.DeserializeObject<Dictionary<string, T>>(responseData, jsonSerializerSettings);
-
-                if (dictionary == null)
+                if (typeof(T) == typeof(string))
                 {
-                    return new FirebaseObject<T>[0];
+                    var jtoken = JObject.Parse(responseData);
+                    var result = new List<FirebaseObject<T>>();
+                    foreach (KeyValuePair<string, JToken> d in jtoken)
+                    {
+                        result.Add(new FirebaseObject<T>(d.Key, (T)(object)d.Value.ToString()));
+                    }
+                    return result;
                 }
-
-                return dictionary.Select(item => new FirebaseObject<T>(item.Key, item.Value)).ToList();
+                else
+                {
+                    var result = JsonConvert.DeserializeObject<Dictionary<string, T>>(responseData, jsonSerializerSettings);
+                    if (result == null)
+                    {
+                        return new FirebaseObject<T>[0];
+                    }
+                    return result.Select(item => new FirebaseObject<T>(item.Key, item.Value)).ToList();
+                }
             }
             catch (Exception ex)
             {
